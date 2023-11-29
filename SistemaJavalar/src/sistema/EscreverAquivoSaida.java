@@ -19,15 +19,13 @@ public class EscreverAquivoSaida {
 	private int totalDevs = 0;
 	private int totalTempo = 0;
 	private int totalAnos = 0;
-
-	final int FATOR= 20000;
 	
 	public EscreverAquivoSaida(SistemaJavalar sistema) {
 		ArrayList<Relatorio> relatorios = new RelatorioDAO().ler();
 		planetas = new SistemaJavalar(relatorios.get(0).getArquivo()).getPlanetas();
 		int count = 0;
 
-		for (int i = 0; i < relatorios.size()/FATOR; i++) {
+		for (int i = 0; i < relatorios.size(); i++) {
 			int cont = 0;
 			alunoQueMaisApareceu(relatorios, count, cont, i);
 			planetaQueMaisExplodiu(relatorios, i);
@@ -68,7 +66,7 @@ public class EscreverAquivoSaida {
 	}
 
 	public void alunoQueMaisApareceu(ArrayList<Relatorio> relatorios, int count, int cont, int i) {
-		for (int j = 0; j < relatorios.size()/FATOR; j++) {
+		for (int j = 0; j < relatorios.size(); j++) {
 			if (relatorios.get(i).getNome() == relatorios.get(j).getNome()) {
 				cont++;
 				}
@@ -109,7 +107,7 @@ public class EscreverAquivoSaida {
 		int[] quantidadeBugs = { 0, 0, 0, 0 };
 		for (int j = 0; j < relatorios.get(0).getQuadrantesBugs().length; j++) {
 			int k = 0;
-			while(k<relatorios.size()/FATOR) {
+			while(k<relatorios.size()) {
 				quantidadeBugs[j] += relatorios.get(k).getQuadrantesBugs()[j];
 				k++;
 			}
@@ -122,7 +120,7 @@ public class EscreverAquivoSaida {
 		int[] quantidadeDevs = {0,0,0,0};
 		for (int j = 0; j < relatorios.get(0).getQuadrantesDevs().length; j++) {
 			int k = 0;
-			while(k<relatorios.size()/FATOR) {
+			while(k<relatorios.size()) {
 				quantidadeDevs[j] += relatorios.get(k).getQuadrantesDevs()[j];
 				k++;
 			}	
@@ -148,7 +146,7 @@ public class EscreverAquivoSaida {
 	
 	public void calcularVelocidade(ArrayList<Relatorio> relatorio) {
 		for (int i = 0; i < velocidades.length; i++) {
-			for (int j = 0; j < relatorio.size()/FATOR; j++) {
+			for (int j = 0; j < relatorio.size(); j++) {
 				velocidades[i] += (double)relatorio.get(j).getVelocidades().get(i);
 			}
 			velocidades[i] = velocidades[i]/relatorio.size();
@@ -156,7 +154,7 @@ public class EscreverAquivoSaida {
 	}
 	
 	public void calcularDias(ArrayList<Relatorio> relatorio) {
-		for (int i = 0; i < relatorio.size()/FATOR; i++) {
+		for (int i = 0; i < relatorio.size(); i++) {
 				for (int j = 0; j < relatorio.get(i).getDias().size(); j++) {
 					totalTempo += relatorio.get(i).getDias().get(j);
 				}
@@ -164,7 +162,7 @@ public class EscreverAquivoSaida {
 	}
 	
 	public void calcularAnos(ArrayList<Relatorio> relatorio) {
-		for (int i = 0; i < relatorio.size()/FATOR; i++) {
+		for (int i = 0; i < relatorio.size(); i++) {
 			for (int j = 0; j < relatorio.get(i).getAnos().size(); j++) {
 				totalAnos += relatorio.get(i).getAnos().get(j);
 			}
