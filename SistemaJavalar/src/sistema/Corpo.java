@@ -15,8 +15,10 @@ public abstract class Corpo {
 	
 	public void checarPosicoes(ArrayList<Planeta> planetas) {
 		for (int i = 0; i < planetas.size(); i++) {
-			if (this.posicao[0] == planetas.get(i).getPosicao()[0]
-					&& this.posicao[1] == planetas.get(i).getPosicao()[1]) {
+			if( this.posicao[0] == planetas.get(i).getPosicao()[0]&& this.posicao[1] == planetas.get(i).getPosicao()[1]
+					|| this.posicao[1] == 8  && this.posicao[0] == 8 || this.posicao[1] == 8  && this.posicao[0] == 9 || this.posicao[1] == 8  && this.posicao[0] == 10
+					|| this.posicao[1] == 9  && this.posicao[0] == 8 || this.posicao[1] == 9  && this.posicao[0] == 9 || this.posicao[1] == 9  && this.posicao[0] == 10
+					|| this.posicao[1] == 10 && this.posicao[0] == 8 || this.posicao[1] == 10 && this.posicao[0] == 9 || this.posicao[1] == 10 && this.posicao[0] == 10) {
 				Random numero = new Random();
 				this.posicao[0] = numero.nextInt(16);
 				this.posicao[1] = numero.nextInt(16);

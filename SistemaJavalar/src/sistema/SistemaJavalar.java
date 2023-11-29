@@ -1,6 +1,9 @@
 package sistema;
 
+import java.awt.Color;
 import java.util.ArrayList;
+
+import bancoDeDados.LerArquivo;
 
 public class SistemaJavalar {
 	ArrayList<Planeta> sistema = new ArrayList<>();
@@ -9,44 +12,57 @@ public class SistemaJavalar {
 	ArrayList<Desenvolvedor> devs = new ArrayList<>();
 	ArrayList<String> planetasExplodidos = new ArrayList<>();
 
-	Sol sol = new Sol("java", 8, 8);
+	Sol sol = new Sol("java", 10, 10);
 	Interacoes interacoes = new Interacoes();
-	Imprimir imprimir = new Imprimir();
+
+	LerArquivo arquivo;
+	String nomeArquivo;
+	int arquivoIndex = 0;
+	boolean arquivoLido = false;
+	boolean explosao = false;
+	ArrayList<ArrayList<Integer>> planetas;
+
+	EscreverAquivoSaida arquivoSaida;
 	
 	protected int totalPeriodos = 0;
 
-	public SistemaJavalar() {
-		sistema.add(new Planeta("Python", 8, 9, 4, 24));
-		sistema.add(new Planeta("Javascript", 8, 10, 3, 10));
-		sistema.add(new Planeta("Ruby on Rails", 8, 11, 2, 48));
-		sistema.add(new Planeta("Php", 8, 12, 2, 60));
-		sistema.add(new Planeta("C#", 8, 13, 1, 4));
-		sistema.add(new Planeta("C++", 8, 14, 2, 0.5));
-		sistema.add(new Planeta("C", 8, 15, 10, 0.1));
+	public SistemaJavalar(String nome) {
+		nomeArquivo = nome;
+		arquivo = new LerArquivo(nome);
+		planetas = arquivo.getPlanetas();
+
+		sistema.add(new Planeta("Python", 9, 7, 4, 24, Color.blue));
+		sistema.add(new Planeta("Javascript", 9, 6, 3, 10, Color.yellow));
+		sistema.add(new Planeta("Ruby on Rails", 9, 5, 2, 48, Color.white));
+		sistema.add(new Planeta("Php", 9, 4, 2, 60, Color.darkGray));
+		sistema.add(new Planeta("C#", 9, 3, 1, 4, Color.magenta));
+		sistema.add(new Planeta("C++", 9, 2, 2, 0.5, Color.gray));
+		sistema.add(new Planeta("C", 9, 1, 10, 0.1, Color.blue));
 
 		sistemaReserva.addAll(sistema);
 		for (int i = 0; i < sistema.size(); i++) {
 			sistema.get(i).deslocamentoMaximo();
 		}
 	}
+	
+	public void criarArquivoSaida() {
+		arquivoSaida = new EscreverAquivoSaida(this);
+	}
+	public void escreverArquivoSaida() {
+		arquivoSaida.escrever();
+	}
 
 	public void bugs(int quantidade) {
 		interacoes.criarBugs(bugs, quantidade, sistema);
-		for (int i = 0; i < bugs.size(); i++) {
-			System.out.println(bugs.get(i).getNome() + "(" + bugs.get(i).getPosicao()[0] + "," + bugs.get(i).getPosicao()[1] + ")");			
-		}
-		System.out.println();
 	}
 
 	public void desenvolvedores(int quantidade) {
 		interacoes.criarDesenvolvedores(devs, quantidade, sistema);
-		for (int i = 0; i < devs.size(); i++) {
-			System.out.println(devs.get(i).getNome() + "(" + devs.get(i).getPosicao()[0] + "," + devs.get(i).getPosicao()[1] + ")");				
-		}
-		System.out.println();
 	}
 
 	public void translacoes() {
+
+		setValores();
 		for (int i = 0; i < sistema.size(); i++) {
 			sistema.get(i).translacao();
 			sistema.get(i).calcularAnos();
@@ -54,44 +70,67 @@ public class SistemaJavalar {
 			sistema.get(i).velocidades.add(sistema.get(i).getDeslocamento());
 			explodirPlanetas();
 		}
-		System.out.println();
-		System.out.println("distancias entre cada planeta:");
 		for (int j = 0; j < sistema.size(); j++) {
 			calcularArea(sistema, sistema.get(j));
 		}
-		
-		norteSul();
-		
-		imprimir.imprimirVelocidades(sistema);
-		imprimir.imprimirDias(sistema);
-		imprimir.imprimirAnos(sistema);
+
+		quadrantesBugs();
+		quadrantesDevs();
 	}
 
 	public void explodirPlanetas() {
 		for (int i = 0; i < sistema.size(); i++) {
 			if (sistema.get(i).getDeslocamento() <= 0) {
-				System.out.println(sistema.get(i).getNome() + " acaba de explodir!");
 				planetasExplodidos.add(sistema.get(i).getNome());
 				sistema.remove(i);
+				planetas.remove(i);
+				explosao = true;
 			}
 		}
 	}
 
-	public void norteSul() {
-		int norte = 0;
-		int sul = 0;
-		for (int i = 0; i < sistema.size(); i++) {
-			if (sistema.get(i).getPosicao()[1] > sol.getPosicao()[1])
-				norte++;
-			else
-				sul++;
+	public int[] quadrantesBugs() {
+		int q1 = 0, q2 = 0, q3 = 0, q4 = 0;
+
+		for (int i = 0; i < bugs.size(); i++) {
+			if (bugs.get(i).getPosicao()[1] < sol.getPosicao()[1] && bugs.get(i).getPosicao()[0] < sol.getPosicao()[0])
+				q1++;
+			else if (bugs.get(i).getPosicao()[1] < sol.getPosicao()[1]
+					&& bugs.get(i).getPosicao()[0] > sol.getPosicao()[0])
+				q2++;
+			else if (bugs.get(i).getPosicao()[1] > sol.getPosicao()[1]
+					&& bugs.get(i).getPosicao()[0] < sol.getPosicao()[0])
+				q3++;
+			else if (bugs.get(i).getPosicao()[1] > sol.getPosicao()[1]
+					&& bugs.get(i).getPosicao()[0] > sol.getPosicao()[0])
+				q4++;
 		}
-		System.out.println();
-		if (norte != 0)
-			System.out.println("há " + norte + " planetas ao norte de java");
-		if (sul != 0)
-			System.out.println("há " + sul + " planetas ao sul de java");
-		System.out.println();
+
+		int[] quadrantes = { q1, q2, q3, q4 };
+
+		return quadrantes;
+	}
+
+	public int[] quadrantesDevs() {
+		int q1 = 0, q2 = 0, q3 = 0, q4 = 0;
+
+		for (int i = 0; i < devs.size(); i++) {
+			if (devs.get(i).getPosicao()[1] < sol.getPosicao()[1] && devs.get(i).getPosicao()[0] < sol.getPosicao()[0])
+				q1++;
+			else if (devs.get(i).getPosicao()[1] < sol.getPosicao()[1]
+					&& devs.get(i).getPosicao()[0] > sol.getPosicao()[0])
+				q2++;
+			else if (devs.get(i).getPosicao()[1] > sol.getPosicao()[1]
+					&& devs.get(i).getPosicao()[0] < sol.getPosicao()[0])
+				q3++;
+			else if (devs.get(i).getPosicao()[1] > sol.getPosicao()[1]
+					&& devs.get(i).getPosicao()[0] > sol.getPosicao()[0])
+				q4++;
+		}
+
+		int[] quadrantes = { q1, q2, q3, q4 };
+
+		return quadrantes;
 	}
 
 	public void calcularArea(ArrayList<Planeta> sistema, Planeta planeta) {
@@ -107,16 +146,81 @@ public class SistemaJavalar {
 				altura = planeta.getPosicao()[1] - sistema.get(i).getPosicao()[1];
 			else
 				altura = sistema.get(i).getPosicao()[1] - planeta.getPosicao()[1];
-			altura++; largura++;
+			altura++;
+			largura++;
 			areas.add(altura * largura);
 		}
-		imprimir.imprimirDistancias(sistema, planeta, areas);
+	}
+
+	public void setValores() {
+		try {
+			for (int i = 0; i < sistema.size(); i++) {
+				sistema.get(i).setPeriodo(planetas.get(i).get(arquivoIndex));
+			}
+			bugs(arquivo.getBug().get(arquivoIndex));
+			desenvolvedores(arquivo.getdev().get(arquivoIndex));
+			arquivoIndex++;
+		} catch (IndexOutOfBoundsException e) {
+			arquivoLido = true;
+		}
+
+	}
+
+	public boolean novoArquivo(String nome) {
+		this.arquivoLido = false;
+		this.arquivo = new LerArquivo(nome);
+		return true;
+	}
+
+	public boolean reset() {
+		if (arquivoLido == true && this.nomeArquivo != arquivo.getNome()) {
+			arquivo = new LerArquivo(nomeArquivo);
+			return true;
+		} else
+			return false;
+	}
+
+	public void setArquivoLido(boolean condicao) {
+		this.arquivoLido = condicao;
+	}
+
+	public void setNomeArquivo(String nome) {
+		this.nomeArquivo = nome;
+		System.out.println(this.nomeArquivo);
+	}
+
+	public void setExplosao(boolean condicao) {
+		this.explosao = condicao;
+	}
+
+	public boolean getExplosao() {
+		return this.explosao;
+	}
+
+	public ArrayList<Planeta> getPlanetas() {
+		return sistema;
+	}
+	public ArrayList<String> getPlanetasExplodidos(){
+		return planetasExplodidos;
+	}
+
+	public ArrayList<Bug> getBugs() {
+		return bugs;
+	}
+
+	public ArrayList<Desenvolvedor> getDevs() {
+		return devs;
+	}
+
+	public boolean getArquivoLido() {
+		return arquivoLido;
 	}
 	
-	public void setPeriodos(int periodo) {
-		totalPeriodos += periodo;
-		for (int i = 0; i < sistema.size(); i++) {
-			sistema.get(i).setPeriodo(periodo);
-		}
+	public String getNomeArquivo() {
+		return this.nomeArquivo;
+	}
+	
+	public EscreverAquivoSaida getArquivoSaida() {
+		return this.arquivoSaida;
 	}
 }

@@ -6,4 +6,6 @@
  *
  */
 module SistemaJavalar {
+	requires java.desktop;
+	requires java.sql;
 }
